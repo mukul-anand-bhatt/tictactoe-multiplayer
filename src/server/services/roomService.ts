@@ -145,17 +145,17 @@ export class RoomService {
         }
 
         // Determine the role for the new participant
-        const activePlayers = room.participants.filter(
-            (p) => p.role === 'player1' || p.role === 'player2'
-        );
+        // Check which roles are taken
+        const isPlayer1Taken = room.participants.some(p => p.role === 'player1');
+        const isPlayer2Taken = room.participants.some(p => p.role === 'player2');
 
         let role: 'player1' | 'player2' | 'spectator';
 
         if (data.role) {
             role = data.role;
-        } else if (activePlayers.length === 0) {
+        } else if (!isPlayer1Taken) {
             role = 'player1';
-        } else if (activePlayers.length === 1) {
+        } else if (!isPlayer2Taken) {
             role = 'player2';
         } else {
             role = 'spectator';
