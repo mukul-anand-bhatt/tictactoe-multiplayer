@@ -1,0 +1,20 @@
+# node_modules
+node_modules
+
+# dist
+dist
+
+# .env
+.env
+
+# logs
+logs
+
+# build
+build
+
+# drizzle
+drizzle
+
+# yarn.lock
+yarn.lock
