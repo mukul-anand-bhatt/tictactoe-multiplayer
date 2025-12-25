@@ -1,11 +1,14 @@
 import { WebSocketServer } from "ws";
 import { gameManager } from "./game/gameManager";
+import { Client } from "undici-types";
 
 
 export function initWS(server: any) {
     const wss = new WebSocketServer({ server });
+    console.log("✅ WebSocket server initialized");
 
     wss.on("connection", (ws) => {
+          console.log("🔌 Client connected");
         let playerId: string | null = null;
         let gameCode: string | null = null;
 
@@ -41,6 +44,16 @@ export function initWS(server: any) {
                         symbol: playerId === game.playerX ? "X" : "O",
                         state: game,
                     }));
+
+
+                    wss.clients.forEach((Client) => {
+                        Client.send(JSON.stringify({
+                            type:"STATE",
+                            state: game,
+                        }));
+                    });
+
+
                 }
 
 
@@ -59,6 +72,8 @@ export function initWS(server: any) {
                     });
                 }
 
+                ws.send(JSON.stringify({ type: "CONNECTED" }));
+
             } catch (err: any) {
                 ws.send(JSON.stringify({
                     type: "ERROR",
@@ -66,6 +81,11 @@ export function initWS(server: any) {
                 }));
             }
         });
+
+
+        ws.on("close", ()=>{
+            console.log("❌ Client disconnected");
+        })
     });
 }
 
