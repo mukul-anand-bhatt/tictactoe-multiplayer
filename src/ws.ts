@@ -10,6 +10,7 @@ export function initWS(server: any) {
         console.log("🔌 Client connected");
         let playerId: string | null = null;
         let gameCode: string | null = null;
+        console.log("Client connected");
 
 
         ws.on("message", async (raw) => {
@@ -37,6 +38,7 @@ export function initWS(server: any) {
                 }
 
                 if (msg.type === "JOIN_GAME") {
+                    console.log(`${playerId} joined game ${msg.code}`)
                     const game = await gameManager.joinGame(msg.code, playerId!);
                     gameCode = msg.code;
 
@@ -67,6 +69,7 @@ export function initWS(server: any) {
 
 
                 if (msg.type === "MOVE") {
+                    console.log(`${playerId} made move ${msg.index} in game ${gameCode}`)
                     const game = await gameManager.makeMove(
                         gameCode!,
                         playerId!,
@@ -87,7 +90,16 @@ export function initWS(server: any) {
                             state: game,
                         }));
                     });
+
+                    // wss.clients.forEach((client) => {
+                    //     client.send(JSON.stringify({
+                    //         type: "STATE",
+                    //         state: game,
+                    //     }));
+                    // });
                 }
+
+                ws.send(JSON.stringify({ type: "CONNECTED" }));
 
                 ws.send(JSON.stringify({ type: "CONNECTED" }));
 
