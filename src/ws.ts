@@ -28,7 +28,7 @@ export function initWS(server: any) {
 
                     gameCode = game.code;
 
-                    // addSocketToRoom(gameCode, ws)
+                    addSocketToRoom(gameCode, ws)
 
                     ws.send(JSON.stringify({
                         type: "GAME_CREATED",
@@ -42,7 +42,7 @@ export function initWS(server: any) {
                     const game = await gameManager.joinGame(msg.code, playerId!);
                     gameCode = msg.code;
 
-                    // addSocketToRoom(gameCode, ws)
+                    addSocketToRoom(gameCode, ws)
 
                     ws.send(JSON.stringify({
                         type: "GAME_JOINED",
@@ -50,19 +50,19 @@ export function initWS(server: any) {
                         state: game,
                     }));
 
-                    // roomSockets.get(gameCode)?.forEach((client) => {
-                    //     client.send(JSON.stringify({
-                    //         type: "STATE",
-                    //         state: game,
-                    //     }));
-                    // });
-
-                    wss.clients.forEach((Client) => {
-                        Client.send(JSON.stringify({
+                    roomSockets.get(gameCode)?.forEach((client) => {
+                        client.send(JSON.stringify({
                             type: "STATE",
                             state: game,
                         }));
                     });
+
+                    // wss.clients.forEach((Client) => {
+                    //     Client.send(JSON.stringify({
+                    //         type: "STATE",
+                    //         state: game,
+                    //     }));
+                    // });
 
 
                 }
@@ -77,14 +77,7 @@ export function initWS(server: any) {
                     );
 
 
-                    // roomSockets.get(gameCode!)?.forEach((client) => {
-                    //     client.send(JSON.stringify({
-                    //         type: "STATE",
-                    //         state: game,
-                    //     }));
-                    // });
-
-                    wss.clients.forEach((client) => {
+                    roomSockets.get(gameCode!)?.forEach((client) => {
                         client.send(JSON.stringify({
                             type: "STATE",
                             state: game,
@@ -114,9 +107,9 @@ export function initWS(server: any) {
 
         ws.on("close", () => {
             console.log("❌ Client disconnected");
-            // if (gameCode) {
-            //     removeSocketFromRoom(gameCode, ws)
-            // }
+            if (gameCode) {
+                removeSocketFromRoom(gameCode, ws)
+            }
         })
     });
 }
